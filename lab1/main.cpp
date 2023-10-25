@@ -13,6 +13,9 @@ GLfloat sphereRotationX = 0.0f;
 
 GLfloat cylinderScale = 1.0f;
 
+bool drawTetrahedronAndSphere = false;
+bool drawCylinderAndTeapot = false;
+
 void drawTetrahedron() {
     glBegin(GL_LINES);
     // Основание тетраэдра
@@ -40,51 +43,58 @@ void drawTetrahedron() {
 
 void drawSphere() {
     glPushMatrix();
-    glTranslatef(3.0f, 0.0f, 0.0f); // Помещаем сферу в другое место
+    glTranslatef(3.0f, 0.0f, 0.0f); 
     glutWireSphere(1.0, 20, 20); // Используем встроенную функцию для рисования сферы
     glPopMatrix();
 }
 
 void drawTeapot() {
     glPushMatrix();
-    glTranslatef(-5.0f, 0.0f, 0.0f); // Помещаем чайник в нужное место
-    glColor3f(0.0f, 1.0f, 0.0f); // Зеленый цвет для чайника
-    glutWireTeapot(1.0); // Используем встроенную функцию для рисования чайника
+    glTranslatef(-5.0f, 0.0f, 0.0f);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glutSolidTeapot(1.0);
     glPopMatrix();
 }
 
 void drawCylinder()
 {
+    //glMatrixMode(GL_PROJECTION);
+    //glLoadIdentity();
+    GLdouble left=-5.0,right=5,bottom=-5.0,top=5.0,near=-10.0, far=10.0;
+
+    //glOrtho(left, right, bottom, top, near, far);
+    glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glTranslatef(2.0f, 0.0f, 0.0f); // Помещаем цилиндр в нужное место
+    glTranslatef(2.0f, 0.0f, 0.0f);
     glScalef(cylinderScale, cylinderScale, cylinderScale);
 
-    glColor3f(1.0f, 1.0f, 0.0f); // Желтый цвет для цилиндра
+    glColor3f(1.0f, 1.0f, 0.0f);// желтый
     GLUquadricObj *cylinder = gluNewQuadric();
-    gluQuadricDrawStyle(cylinder, GLU_LINE); // Рисуем цилиндр в виде линий
+    gluQuadricDrawStyle(cylinder, GLU_FILL); // Рисуем цилиндр в виде линий
     gluCylinder(cylinder, 1.0, 1.0, 2.0, 20, 20); // Рисуем цилиндр
     glPopMatrix();
+    // glOrto - параллельное проецирование
 }
 
 void drawAxes() {
-    glLineWidth(2.0f); // Устанавливаем ширину линии
+    glLineWidth(2.0f);
 
     // Ось X (красная линия)
-    glColor3f(1.0f, 0.0f, 0.0f); // Красный цвет
+    glColor3f(1.0f, 0.0f, 0.0f);
     glBegin(GL_LINES);
     glVertex3f(0.0f, 0.0f, 0.0f);
     glVertex3f(1.0f, 0.0f, 0.0f);
     glEnd();
 
     // Ось Y (зеленая линия)
-    glColor3f(0.0f, 1.0f, 0.0f); // Зеленый цвет
+    glColor3f(0.0f, 1.0f, 0.0f);
     glBegin(GL_LINES);
     glVertex3f(0.0f, 0.0f, 0.0f);
     glVertex3f(0.0f, 1.0f, 0.0f);
     glEnd();
 
     // Ось Z (синяя линия)
-    glColor3f(0.0f, 0.0f, 1.0f); // Синий цвет
+    glColor3f(0.0f, 0.0f, 1.0f);
     glBegin(GL_LINES);
     glVertex3f(0.0f, 0.0f, 0.0f);
     glVertex3f(0.0f, 0.0f, 1.0f);
@@ -123,36 +133,42 @@ void display()
     // Рисуем оси
     drawAxes();
 
-    // Рисуем тетраэдр
-    glPushMatrix();
-    glTranslatef(-2.0f, 0.0f, 0.0f);
-    glRotatef(tetrahedronRotationZ, 0.0f, 0.0f, 1.0f);
-    glColor3f(1.0f, 0.0f, 0.0f); // Красный цвет для тетраэдра
-    drawTetrahedron();
-    glPopMatrix();
+    if ( drawTetrahedronAndSphere )
+    {
+        // Рисуем тетраэдр
+        glPushMatrix();
+        glTranslatef(-2.0f, 0.0f, 0.0f);
+        glRotatef(tetrahedronRotationZ, 0.0f, 0.0f, 1.0f);
+        glColor3f(1.0f, 0.0f, 0.0f);
+        drawTetrahedron();
+        glPopMatrix();
 
-    // Рисуем сферу
-    glPushMatrix();
-    glTranslatef(2.0f, 0.0f, 0.0f);
-    glRotatef(sphereRotationX, 1.0f, 0.0f, 0.0f);
-    glColor3f(0.0f, 0.0f, 1.0f); // Синий цвет для сферы
-    drawSphere();
-    glPopMatrix();
+        // Рисуем сферу
+        glPushMatrix();
+        glTranslatef(2.0f, 0.0f, 0.0f);
+        glRotatef(sphereRotationX, 1.0f, 0.0f, 0.0f);
+        glColor3f(0.0f, 0.0f, 1.0f);
+        drawSphere();
+        glPopMatrix();
+    }
+    
+    if ( drawCylinderAndTeapot )
+    {
+        // Рисуем чайник
+        drawTeapot();
 
-    // Рисуем чайник
-    drawTeapot();
-
-    // Рисуем цилиндр
-    glPushMatrix();
-    drawCylinder();
-    glPopMatrix();
+        // Рисуем цилиндр
+        glPushMatrix();
+        drawCylinder();
+        glPopMatrix();
+    }
 
 
     // Завершаем рисование
     glutSwapBuffers();
 }
 
-void specialKeys(int key, int x, int y) {
+void specialKeys(int key, int, int) {
     switch (key) {
         case GLUT_KEY_UP:
             cameraY += 0.1f;
@@ -170,19 +186,29 @@ void specialKeys(int key, int x, int y) {
     glutPostRedisplay();
 }
 
-void keyboard(unsigned char key, int x, int y) {
+void keyboard(unsigned char key, int, int) {
     switch (key) {
         case 'z':
-            tetrahedronRotationZ -= 180.0f;
+            tetrahedronRotationZ -= 5.0f;
             break;
         case 'x':
-            sphereRotationX += 90.0f;
+            sphereRotationX += 5.0f;
             break;
         case 'c':
             cylinderScale *= 0.7f;
             break;
         case 'b':
             cylinderScale /= 0.7f;
+            break;
+        case '1':
+            // Переключение на рисование тетраэдра и сферы
+            drawTetrahedronAndSphere = true;
+            drawCylinderAndTeapot = false;
+            break;
+        case '2':
+            // Переключение на рисование цилиндра и чайника
+            drawTetrahedronAndSphere = false;
+            drawCylinderAndTeapot = true;
             break;
         case 27: // Клавиша Esc
             exit(0);
