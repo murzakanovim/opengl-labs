@@ -21,7 +21,7 @@ float debugz = 0.0f;
 
 const float cameraSpeed = 2.0f;
 
-int move = 1000;
+int move = 0;
 float gscale = 0.6;
 
 void specialKeys(int key, int, int);
@@ -58,6 +58,10 @@ int main(int argc, char **argv)
 
     return 0;
 }
+int getCurrMoveVal()
+{
+    return move / 100 % 2 ? 5 : 1; 
+}
 
 void keyboard(unsigned char key, int, int)
 {
@@ -85,10 +89,10 @@ void keyboard(unsigned char key, int, int)
         debugx = debugy = debugz = 0;
         break;
     case '.':
-        move += 10;
+        move += getCurrMoveVal();    
         break;
     case ',':
-        move -= 10;
+        move -= getCurrMoveVal();
         break;
     case 'z':
         gscale += 0.1;
